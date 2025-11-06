@@ -23,6 +23,8 @@ public class FailSimulationService {
     private volatile double probability;
     @Value("${fail.time:5}")
     private volatile int failTime;
+    @Value("${fail.mode:true}")
+    private boolean failMode;
 
     public void activate(long time) {
         this.failUntil.set(LocalDateTime.now().plusSeconds(time));
@@ -37,6 +39,10 @@ public class FailSimulationService {
     }
 
     public boolean shouldFail() {
+        if(!failMode){
+            this.isFailing.set(false);
+            return false;
+        }
         var now = LocalDateTime.now();
         var until = this.failUntil.get();
         if (now.isBefore(until)) {
